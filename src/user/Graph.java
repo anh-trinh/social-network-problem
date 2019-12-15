@@ -20,6 +20,22 @@ public class Graph {
 		vertices = new ArrayList<>();
 	}
 
+	public List<List<Edge>> getEdges() {
+		return edges;
+	}
+
+	public void setEdges(List<List<Edge>> edges) {
+		this.edges = edges;
+	}
+
+	public List<Vertex> getVertices() {
+		return vertices;
+	}
+
+	public void setVertices(List<Vertex> vertices) {
+		this.vertices = vertices;
+	}
+
 	public void addVertex(Vertex v) {
 		vertices.add(v);
 	}
@@ -38,9 +54,9 @@ public class Graph {
 	public void printGraph() {
 		for (List<Edge> vList : edges) {
 			if (vList.size() > 0) {
-				System.out.print("" + vList.get(0).from().id());
+				System.out.print("Vertex ID: " + vList.get(0).from().id() + " Edge: ");
 				for (Edge edge : vList) {
-					System.out.print(String.format(" (%d, %d, %.0f)", edge.from().id(), edge.to().id(), edge.weight()));
+					System.out.print(String.format(" (%d, %d)", edge.from().id(), edge.to().id()));
 				}
 				System.out.println();
 			}
@@ -83,12 +99,15 @@ public class Graph {
 
 		// step 1: add mandatory requirement (n communities, each has m members)
 		IntStream.range(0, nCommunity).forEach(i -> {
+
+			// create members
 			IntStream.range(0, nMember).forEach(j -> {
 				Vertex v = new Vertex(i * nMember + j);
 				g.addVertex(v);
 				g.edges.add(new ArrayList<>());
 			});
 
+			// for each member just created, add connections to all other members in one community (create clique)
 			for (int t = 0; t < nMember; t++) {
 				for (int t2 = 0; t2 < nMember; t2++) {
 					if (t != t2) {
@@ -99,11 +118,17 @@ public class Graph {
 		});
 		System.out.println("  -> Add links takes: " + (Instant.now().toEpochMilli() - curTime) + " ms");
 
-		// step 2: add random links between those community
+		// step 2: add random links between those communities
 		curTime = Instant.now().toEpochMilli();
 		IntStream.range(0, nCommunity).forEach(i -> {
-			g.addEdge(g.vertices.get(rand.nextInt(i * nMember + nMember)),
-					g.vertices.get(rand.nextInt(nCommunity * nMember)), 1.0);
+			int randomUser1 = rand.nextInt(i * nMember + nMember);
+			int randomUser2 = rand.nextInt(nCommunity * nMember);
+
+			// make sure a user can not connect itself
+			if (randomUser1 != randomUser2) {
+				g.addEdge(g.vertices.get(randomUser1),
+						g.vertices.get(randomUser2), 1.0);
+			}
 		});
 
 		System.out.println("  -> Add more links takes: " + (Instant.now().toEpochMilli() - curTime) + " ms");
