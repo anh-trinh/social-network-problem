@@ -14,9 +14,8 @@ public class Main {
         // create network with 5000 community, each has 100 users (500k users total)
         //Graph.genNetwork(5000, 100);
 
-        CountCommunity countCommunity = new CountCommunity(2, 3);
-        Graph graph = countCommunity.getGraph();
-        graph.printGraph();
+        CountCommunity countCommunity = new CountCommunity(2, 10);
+        System.out.println("Number of communities: " + countCommunity.countNumberOfCommunity());
 
     }
 }

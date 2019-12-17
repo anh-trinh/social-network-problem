@@ -93,45 +93,52 @@ public class Graph {
 	}
 
 	public static Graph genNetwork(int nCommunity, int nMember) {
-		System.out.println(String.format("createGraph(nCommunity = %d, nMember = %d)", nCommunity, nMember));
-		long curTime = Instant.now().toEpochMilli();
 		Graph g = new Graph();
 
-		// step 1: add mandatory requirement (n communities, each has m members)
-		IntStream.range(0, nCommunity).forEach(i -> {
+		if (nMember >= 3) {
+			System.out.println(String.format("createGraph(nCommunity = %d, nMember = %d)", nCommunity, nMember));
+			long curTime = Instant.now().toEpochMilli();
 
-			// create members
-			IntStream.range(0, nMember).forEach(j -> {
-				Vertex v = new Vertex(i * nMember + j);
-				g.addVertex(v);
-				g.edges.add(new ArrayList<>());
-			});
+			// step 1: add mandatory requirement (n communities, each has m members)
+			IntStream.range(0, nCommunity).forEach(i -> {
 
-			// for each member just created, add connections to all other members in one community (create clique)
-			for (int t = 0; t < nMember; t++) {
-				for (int t2 = 0; t2 < nMember; t2++) {
-					if (t != t2) {
-						g.addEdge(g.vertices.get(i * nMember + t), g.vertices.get(i * nMember + t2), 1.0);
+				// create members
+				IntStream.range(0, nMember).forEach(j -> {
+					Vertex v = new Vertex(i * nMember + j);
+					g.addVertex(v);
+					g.edges.add(new ArrayList<>());
+				});
+
+				// for each member just created, add connections to all other members in one community (create clique)
+				for (int t = 0; t < nMember; t++) {
+					for (int t2 = 0; t2 < nMember; t2++) {
+						if (t != t2) {
+							g.addEdge(g.vertices.get(i * nMember + t), g.vertices.get(i * nMember + t2), 1.0);
+						}
 					}
 				}
-			}
-		});
-		System.out.println("  -> Add links takes: " + (Instant.now().toEpochMilli() - curTime) + " ms");
+			});
+			System.out.println("  -> Add links takes: " + (Instant.now().toEpochMilli() - curTime) + " ms");
 
-		// step 2: add random links between those communities
-		curTime = Instant.now().toEpochMilli();
-		IntStream.range(0, nCommunity).forEach(i -> {
-			int randomUser1 = rand.nextInt(i * nMember + nMember);
-			int randomUser2 = rand.nextInt(nCommunity * nMember);
+			// step 2: add random links between those communities
+			curTime = Instant.now().toEpochMilli();
+			IntStream.range(0, nCommunity).forEach(i -> {
+				int randomUser1 = rand.nextInt(i * nMember + nMember);
+				int randomUser2 = rand.nextInt(nCommunity * nMember);
 
-			// make sure a user can not connect itself
-			if (randomUser1 != randomUser2) {
-				g.addEdge(g.vertices.get(randomUser1),
-						g.vertices.get(randomUser2), 1.0);
-			}
-		});
+				// make sure a user can not connect itself
+				if (randomUser1 != randomUser2) {
+					g.addEdge(g.vertices.get(randomUser1),
+							g.vertices.get(randomUser2), 1.0);
+				}
+			});
 
-		System.out.println("  -> Add more links takes: " + (Instant.now().toEpochMilli() - curTime) + " ms");
+			System.out.println("  -> Add more links takes: " + (Instant.now().toEpochMilli() - curTime) + " ms");
+		}
+		else {
+			System.out.println("Please enter at least 3 users");
+		}
+
 		return g;
 	}
 }
