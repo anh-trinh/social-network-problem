@@ -1,4 +1,5 @@
-import algorithm.CountCommunity;
+import algorithm.ConventionalMethod;
+import algorithm.GenerateGraph;
 import user.Graph;
 import user.Vertex;
 
@@ -16,8 +17,15 @@ public class Main {
         //Graph graph2 = new Graph();
         //graph2.genNetwork(5000, 100);
 
-        CountCommunity countCommunity = new CountCommunity(2, 4);
-        System.out.println("Number of communities: " + countCommunity.countNumberOfCommunity());
+        // 3. Develop an algorithm to find all of communities
+        GenerateGraph generateGraph = new GenerateGraph();
+        Graph graph = generateGraph.genNetwork(30, 100);
+
+        ConventionalMethod conventionalMethod = new ConventionalMethod(graph);
+        ArrayList<ArrayList<Vertex>> communities = conventionalMethod.findCommunities();
+        System.out.println("List of communities:");
+        conventionalMethod.printVerticesList(communities);
+        System.out.println(" -> number of communities: " + communities.size());
 
     }
 }

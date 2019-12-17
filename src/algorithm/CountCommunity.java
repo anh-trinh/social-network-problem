@@ -4,7 +4,6 @@ import user.Edge;
 import user.Graph;
 import user.Vertex;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,18 +27,46 @@ public class CountCommunity {
     }
 
     public int countNumberOfCommunity() {
-        int numberOfCommunity = 0;
+        int numberOfCommunity = getCommunityVertices().size();
+        return numberOfCommunity;
+    }
+
+    public ArrayList<ArrayList<Vertex>> getCommunityVertices() {
+        ArrayList<ArrayList<Vertex>> communityVertices = new ArrayList<>();
+        ArrayList<ArrayList<Vertex>> completeGraphVertices = filterCompleteGraphVertices();
+
+        while (completeGraphVertices.size() != 0) {
+            ArrayList<Vertex> chosenVertices = completeGraphVertices.get(0);
+            for (int i = 1; i < completeGraphVertices.size(); i++) {
+                ArrayList<Vertex> consideredVertices = completeGraphVertices.get(i);
+                if (consideredVertices.size() > chosenVertices.size()) {
+                    if (consideredVertices.containsAll(chosenVertices)) {
+                        communityVertices.add(consideredVertices);
+                        completeGraphVertices.remove(i);
+                    }
+                }
+                else {
+                    if (chosenVertices.containsAll(consideredVertices)) {
+                        communityVertices.add(chosenVertices);
+                        completeGraphVertices.remove(i);
+                    }
+                }
+            }
+            completeGraphVertices.remove(0);
+        }
+        return communityVertices;
+    }
+
+    private ArrayList<ArrayList<Vertex>> filterCompleteGraphVertices() {
+        ArrayList<ArrayList<Vertex>> completeGraphVertices = new ArrayList<>();
         ArrayList<ArrayList<Vertex>> allSubVertices = generateSubVertices();
         for (ArrayList<Vertex> subVertices : allSubVertices) {
-            System.out.println("-----------------------------------");
-            boolean isCom = isCompleteGraph(subVertices);
-            System.out.println("isCompleteGraph(subVertices): "+isCom);
-            if (isCom) {
-                numberOfCommunity++;
+            boolean isCompleteGraph = isCompleteGraph(subVertices);
+            if (isCompleteGraph) {
+                completeGraphVertices.add(subVertices);
             };
-            System.out.println("numberOfCommunity: "+numberOfCommunity);
         }
-        return numberOfCommunity;
+        return completeGraphVertices;
     }
 
     private ArrayList<ArrayList<Vertex>> generateSubVertices() {
@@ -77,20 +104,13 @@ public class CountCommunity {
     private boolean isCompleteGraph(ArrayList<Vertex> subVertices) {
 
         List<List<Edge>> edges = this.graph.getEdges();
-        int counter = 0;
 
-        System.out.println("--------");
-        System.out.println("subVertices size: "+subVertices.size());
         for (Vertex chosenVertex : subVertices) {
-            counter++;
-            System.out.println("chosenVertex: "+chosenVertex.id());
+            int counter = 1;
             List<Edge> adjacencyEdgesOfChosenVertex = edges.get(chosenVertex.id());
             for (Vertex consideredVertex : subVertices) {
-                System.out.println("************");
-                System.out.println("consideredVertex: "+consideredVertex.id());
                 if (chosenVertex.id() != consideredVertex.id()) {
                     for (Edge adjacencyEdge : adjacencyEdgesOfChosenVertex) {
-                        System.out.println("adjacencyEdge: ("+adjacencyEdge.from().id()+","+adjacencyEdge.to().id()+")");
                         if (consideredVertex.id() == adjacencyEdge.to().id()) {
                             counter++;
                             break;
@@ -99,9 +119,7 @@ public class CountCommunity {
                 }
             }
 
-            System.out.println("counter: "+counter);
-            System.out.println("subVertices.size(): "+subVertices.size());
-            if (counter < subVertices.size() || counter % subVertices.size() != 0) {
+            if (counter != subVertices.size()) {
                 return false;
             }
         }
