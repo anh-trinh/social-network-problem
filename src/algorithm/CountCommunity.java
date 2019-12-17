@@ -13,7 +13,10 @@ public class CountCommunity {
     private Graph graph;
 
     public CountCommunity(int nCommunity, int nMember) {
-        setGraph(Graph.genNetwork(nCommunity, nMember));
+        GenerateGraph generateGraph = new GenerateGraph();
+        Graph graph = generateGraph.genNetwork(nCommunity, nMember);
+        graph.printGraph();
+        setGraph(graph);
     }
 
     public Graph getGraph() {
@@ -27,11 +30,14 @@ public class CountCommunity {
     public int countNumberOfCommunity() {
         int numberOfCommunity = 0;
         ArrayList<ArrayList<Vertex>> allSubVertices = generateSubVertices();
-        printSubVertices(allSubVertices);
         for (ArrayList<Vertex> subVertices : allSubVertices) {
-            if (isCompleteGraph(subVertices)) {
+            System.out.println("-----------------------------------");
+            boolean isCom = isCompleteGraph(subVertices);
+            System.out.println("isCompleteGraph(subVertices): "+isCom);
+            if (isCom) {
                 numberOfCommunity++;
             };
+            System.out.println("numberOfCommunity: "+numberOfCommunity);
         }
         return numberOfCommunity;
     }
@@ -69,18 +75,25 @@ public class CountCommunity {
     }
 
     private boolean isCompleteGraph(ArrayList<Vertex> subVertices) {
-        System.out.println("-----------------------------------");
+
         List<List<Edge>> edges = this.graph.getEdges();
         int counter = 0;
 
+        System.out.println("--------");
+        System.out.println("subVertices size: "+subVertices.size());
         for (Vertex chosenVertex : subVertices) {
             counter++;
+            System.out.println("chosenVertex: "+chosenVertex.id());
             List<Edge> adjacencyEdgesOfChosenVertex = edges.get(chosenVertex.id());
             for (Vertex consideredVertex : subVertices) {
+                System.out.println("************");
+                System.out.println("consideredVertex: "+consideredVertex.id());
                 if (chosenVertex.id() != consideredVertex.id()) {
                     for (Edge adjacencyEdge : adjacencyEdgesOfChosenVertex) {
+                        System.out.println("adjacencyEdge: ("+adjacencyEdge.from().id()+","+adjacencyEdge.to().id()+")");
                         if (consideredVertex.id() == adjacencyEdge.to().id()) {
                             counter++;
+                            break;
                         }
                     }
                 }
@@ -89,11 +102,9 @@ public class CountCommunity {
             System.out.println("counter: "+counter);
             System.out.println("subVertices.size(): "+subVertices.size());
             if (counter < subVertices.size() || counter % subVertices.size() != 0) {
-                System.out.println("return false");
                 return false;
             }
         }
-        System.out.println("return true");
         return true;
     }
 }
