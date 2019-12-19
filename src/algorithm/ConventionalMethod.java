@@ -51,19 +51,6 @@ public class ConventionalMethod {
         return numberOfMember;
     }
 
-    public void printVerticesList(ArrayList<ArrayList<Vertex>> verticesList) {
-        for (ArrayList<Vertex> vertices : verticesList) {
-            System.out.print("(");
-            int finalIndex = vertices.size() - 1;
-            for (int i = 0; i < finalIndex; i++) {
-                System.out.print(vertices.get(i).id());
-                System.out.print(",");
-            }
-            System.out.print(vertices.get(finalIndex).id());
-            System.out.println(")");
-        }
-    }
-
     private ArrayList<ArrayList<Vertex>> generateSubVertices() {
         ArrayList<ArrayList<Vertex>> allSubVertices = new ArrayList<>();
         List<Vertex> graphVertices = graph.getVertices();
