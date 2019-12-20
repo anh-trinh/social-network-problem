@@ -14,7 +14,6 @@ public class CountCommunity {
     public CountCommunity(int nCommunity, int nMember) {
         GenerateGraph generateGraph = new GenerateGraph();
         Graph graph = generateGraph.genNetwork(nCommunity, nMember);
-        graph.printGraph();
         setGraph(graph);
     }
 
